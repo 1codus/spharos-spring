@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spharosdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: update # 테이블 자동 생성/수정 전략 (create- 테이블 새로 생성, update- 바뀐 사항만 변경(데이터 타입을 변경하거나 삭제한 건 update 안됨. 직접 디비로 가서 고쳐야함, validate, none 등)
+    show-sql: true       # 실행되는 SQL 쿼리를 콘솔에 출력
+    properties:
+      hibernate:
+        format_sql: true   # SQL 쿼리를 보기 좋게 정렬해서 출력
+        dialect: org.hibernate.dialect.MySQLDialect # 방언 설정 (Hibernate 6+ 기준)
+
+server:
+  port: 8080 # 서버 포트 번호 (필요에 따라 수정)
