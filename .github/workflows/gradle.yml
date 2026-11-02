@@ -37,24 +37,13 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}  # 이게 ec2 만들때 생긴 pem키
           script: |
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/eureka:${{ github.run_number }}
-            sudo docker rm -f eureka || true
-            sudo docker run -d --name eureka -p 8761:8761 --network spharos ${{ secrets.DOCKER_USERNAME }}/eureka:${{ github.run_number }}
-
-      - name: Deploy to prod
-        uses: appleboy/ssh-action@v1.2.0  //ssh 접속하기 위한 거
-        with:
-          host: ${{ secrets.HOST_EC2 }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY }} //이게 ec2 만들떄 생긴 pem키
-          script: |
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "{{ secrets.DOCKER_USERNAME }}" --password-stdin //권한
-            sudo docker pull "${{ secrets.DOCKER_USERNAME }}/eureka:${{ github.run_number }}"
-            sudo docker stop eureka || true //이미 유레카라는 게 띄워져있으면 스탑하겟다
-            sudo docker rm eureka || true //스탑한 도커 지우겠다.
-            sudo docker run -d \      //여긴 그냥 런하기 위해 썼던 거 똑같이 쓴거임
+            sudo docker stop eureka || true
+            sudo docker rm eureka || true
+            sudo docker run -d \
               --name eureka \
               --network spharos \
               -p 8761:8761 \
-              "${{ secrets.DOCKER_USERNAME }}/eureka:${{ github.run_number }}"
-            sudo docker image prune -a -f //이미지가 쌓이니간 안쓰는건 삭제하라는 명령
+              ${{ secrets.DOCKER_USERNAME }}/eureka:${{ github.run_number }}
+            sudo docker image prune -a -f
